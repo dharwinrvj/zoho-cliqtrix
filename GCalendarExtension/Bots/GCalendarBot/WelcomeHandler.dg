@@ -1,0 +1,10 @@
+response = Map();
+if(newuser)
+{
+	response = {"text":"Welcome " + user.get("first_name") + " !\n\nI'm the GCalendar Bot, here to Schedule Events and to bring all the Events and its Reminders.","bot":{"name":"GCalendar Bot","image":"https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_30_2x.png"},"card":{"title":"Hello !","icon":"https://img.icons8.com/external-sbts2018-outline-sbts2018/10000/000000/external-events-social-media-basic-1-sbts2018-outline-sbts2018.png","thumbnail":"https://img.icons8.com/ios-filled/3000/000000/overtime.png","theme":"modern-inline"},"buttons":{{"label":"Schedule an Event","hint":"Click here to Schedule an Event","action":{"type":"invoke.function","data":{"name":"scheduleEvent"}},"key":""}}};
+}
+else
+{
+	response = {"text":"Welcome " + user.get("first_name") + " !\n\nI'm the GCalendar Bot, here to Schedule Events and to bring all the Events and its Reminders.","bot":{"name":"GCalendar Bot","image":"https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_30_2x.png"},"card":{"title":"Hello !","icon":"https://img.icons8.com/external-sbts2018-outline-sbts2018/10000/000000/external-events-social-media-basic-1-sbts2018-outline-sbts2018.png","thumbnail":"https://img.icons8.com/ios-filled/3000/000000/overtime.png","theme":"modern-inline"},"buttons":{{"label":"Schedule an Event","hint":"Click here to Schedule an Event","action":{"type":"invoke.function","data":{"name":"scheduleEvent"}},"key":""}}};
+}
+return response;

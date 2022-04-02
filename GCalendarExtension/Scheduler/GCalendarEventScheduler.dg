@@ -1,0 +1,43 @@
+response = invokeurl
+[
+	url :"https://www.googleapis.com/calendar/v3/calendars/primary/events"
+	type :GET
+	connection:"cliqgcalender"
+];
+items = response.get("items");
+event = Collection();
+sample = Map();
+for each  item in items
+{
+	start = item.get("start");
+	end = item.get("end");
+	dateTime = "";
+	date = "";
+	endDateTime = "";
+	if(start.get("dateTime") != null)
+	{
+		dateTime = start.get("dateTime");
+		endDateTime = end.get("dateTime");
+		if(zoho.currentdate.getDate() == dateTime.getDate())
+		{
+			event.insert({"Event":item.get("summary"),"ScheduledAt":dateTime.subText(11,19),"EndsAt":endDateTime.subText(11,19),"TimeZone":start.get("timeZone")});
+		}
+	}
+	if(start.get("date") != null)
+	{
+		date = start.get("date");
+		if(zoho.currentdate.getDate() == date.getDate())
+		{
+			event.insert({"Event":item.get("summary"),"ScheduledAt":"","EndsAt":"","TimeZone":""});
+		}
+	}
+}
+if(event.size() > 0)
+{
+	sample = {"text":"Hi " + user.get("first_name") + " !\nHere is the Today's Scheduled Events for you.","buttons":{{"label":"View Events","hint":"Click here to View Events","action":{"type":"open.url","data":{"web":"https://calendar.google.com/calendar/u/0/r/day?tab=cc"}}}},"bot":{"name":"GCalendar Bot","image":"https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_30_2x.png"},"card":{"title":"Today Events","icon":"https://img.icons8.com/external-sbts2018-outline-sbts2018/58/000000/external-events-social-media-basic-1-sbts2018-outline-sbts2018.png","theme":"modern-inline"},"slides":{{"type":"table","title":"Events","data":{"headers":{"Event","ScheduledAt","EndsAt","TimeZone"},"rows":event}}}};
+}
+else
+{
+	sample = {"text":"Hi " + user.get("first_name") + " !\nThere is no Today's Scheduled Events for you","bot":{"name":"GCalendar Bot","image":"https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_30_2x.png"},"card":{"title":"Today Events","icon":"https://img.icons8.com/external-sbts2018-outline-sbts2018/58/000000/external-events-social-media-basic-1-sbts2018-outline-sbts2018.png","theme":"modern-inline"}};
+}
+zoho.cliq.postToBot("gcalenderbot",sample);

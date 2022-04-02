@@ -1,0 +1,47 @@
+response = invokeurl
+[
+	url :"https://www.googleapis.com/calendar/v3/calendars/primary/events"
+	type :GET
+	connection:"cliqgcalender"
+];
+items = response.get("items");
+event = Collection();
+sample = Map();
+for each  i in {0,1,2,3,4,5,6}
+{
+	for each  item in items
+	{
+		start = item.get("start");
+		end = item.get("end");
+		dateTime = "";
+		date = "";
+		endDateTime = "";
+		if(start.get("dateTime") != null)
+		{
+			dateTime = start.get("dateTime");
+			endDateTime = end.get("dateTime");
+			dates = zoho.currentdate.getDate();
+			if(zoho.currentdate.addDay(i).getDate() == dateTime.getDate())
+			{
+				event.insert({"Event":item.get("summary"),"Date":dateTime.getDate(),"ScheduledAt":dateTime.subText(11,19),"EndsAt":endDateTime.subText(11,19),"TimeZone":start.get("timeZone")});
+			}
+		}
+		if(start.get("date") != null)
+		{
+			date = start.get("date");
+			if(zoho.currentdate.addDay(i).getDate() == date.getDate())
+			{
+				event.insert({"Event":item.get("summary"),"Date":date.getDate(),"ScheduledAt":"","EndsAt":"","TimeZone":""});
+			}
+		}
+	}
+}
+if(event.size() > 0)
+{
+	sample = {"text":"Here is the Next 7 Days Scheduled Events for you.","buttons":{{"label":"View Events","hint":"Click here to View Events","action":{"type":"open.url","data":{"web":"https://calendar.google.com/calendar/u/0/r/week?tab=cc"}}}},"bot":{"name":"GCalendar Bot","image":"https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_30_2x.png"},"card":{"title":"Next 7 Days Events","icon":"https://img.icons8.com/external-sbts2018-outline-sbts2018/58/000000/external-events-social-media-basic-1-sbts2018-outline-sbts2018.png","theme":"modern-inline"},"slides":{{"type":"table","title":"Events","data":{"headers":{"Event","Date","ScheduledAt","EndsAt","TimeZone"},"rows":event}}}};
+}
+else
+{
+	sample = {"text":"There is no Scheduled Events for Next 7 Days for you","bot":{"name":"GCalendar Bot","image":"https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_30_2x.png"},"card":{"title":"Next 7 Days Events","icon":"https://img.icons8.com/external-sbts2018-outline-sbts2018/58/000000/external-events-social-media-basic-1-sbts2018-outline-sbts2018.png","theme":"modern-inline"}};
+}
+return sample;
