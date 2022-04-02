@@ -1,0 +1,23 @@
+response = Map();
+formValues = form.get("values");
+if(!formValues.containsKey("portals"))
+{
+	return {"text":"Your account does not have any Portals.Do try again after creating Portals"};
+}
+if(!formValues.containsKey("project"))
+{
+	return {"text":"Looks like you haven't created any Projects in this Portal. Do try again after creating one."};
+}
+portalID = form.get("values").get("portals").get("value");
+projectID = form.get("values").get("project").get("value");
+projectName = form.get("values").get("project").get("label");
+bug = form.get("values").get("title");
+bug_description = form.get("values").get("description");
+addIssue = invokeurl
+[
+	url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/" + projectID + "/bugs/?title=" + encodeUrl(bug) + "&description=" + encodeUrl(bug_description)
+	type :POST
+	connection:"cliqzohoprojects"
+];
+response = {"text":"Successfully added a Bug in *" + projectName + "* "};
+return response;

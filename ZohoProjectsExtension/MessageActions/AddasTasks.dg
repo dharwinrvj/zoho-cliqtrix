@@ -1,0 +1,31 @@
+// Code for message action to add an issue in Zoho Projects
+form = Map();
+desc = message.get("text");
+option = List();
+inputs = List();
+res = invokeurl
+[
+	url :"https://projectsapi.zoho.com/restapi/portals/"
+	type :GET
+	connection:"cliqzohoprojects"
+];
+if(!res.get("portals").isEmpty())
+{
+	portals = res.get("portals");
+	for each  portal in portals
+	{
+		entry = Map();
+		entry.put("label",portal.get("name"));
+		entry.put("value",portal.get("id_string"));
+		option.add(entry);
+	}
+	inputs.add({"type":"select","name":"portals","label":"Portals","trigger_on_change":true,"hint":"All your active Portals are listed here","placeholder":"Choose a Portal","mandatory":true,"options":option});
+	inputs.add({"type":"text","name":"title","label":"Title","hint":"Enter the Task name","placeholder":"Ex: Update DWinCorp UI","mandatory":true,"value":""});
+	inputs.add({"type":"textarea","name":"description","label":"Description","hint":"Briefly Describe the Task","max_length":1000,"placeholder":"New UI changes and Fast rendering functionalities are to be updated soon","mandatory":false,"value":desc});
+	form = {"type":"form","title":"Add Tasks","hint":"Select the Project into which you want to Add a Task.","name":"task","version":1,"button_label":"Add","actions":{"submit":{"type":"invoke.function","name":"addTasks"}},"inputs":inputs};
+}
+else
+{
+	return {"text":"Your account does not have any Portals.Do try again after creating Portals"};
+}
+return form;

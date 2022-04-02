@@ -1,0 +1,58 @@
+targetName = target.get("name");
+inputValues = form.get("values");
+option = List();
+actions = list();
+if(targetName.equalsIgnoreCase("portals"))
+{
+	portalID = inputValues.get("portals").get("value");
+	res = invokeurl
+	[
+		url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/"
+		type :GET
+		connection:"cliqzohoprojects"
+	];
+	if(!res.get("projects").isEmpty())
+	{
+		projects = res.get("projects");
+		for each  project in projects
+		{
+			entry = Map();
+			entry.put("label",project.get("name"));
+			entry.put("value",project.get("id"));
+			option.add(entry);
+		}
+		actions.add({"type":"add_after","name":"portals","input":{"type":"select","name":"project","label":"Project","hint":"All Projects from the selected Portal are listed here","placeholder":"Pick a Project","mandatory":true,"value":"list","options":option,"trigger_on_change":true}});
+	}
+	else
+	{
+		actions.add({"type":"remove","name":"project"});
+	}
+}
+if(targetName.equalsIgnoreCase("project"))
+{
+	portalID = inputValues.get("portals").get("value");
+	projectID = inputValues.get("project").get("value");
+	res = invokeurl
+	[
+		url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/" + projectID + "/tasklists/?flag=internal"
+		type :GET
+		connection:"cliqzohoprojects"
+	];
+	if(!res.get("tasklists").isEmpty())
+	{
+		tasklists = res.get("tasklists");
+		for each  tasklist in tasklists
+		{
+			entry = Map();
+			entry.put("label",tasklist.get("name"));
+			entry.put("value",tasklist.get("id"));
+			option.add(entry);
+		}
+		actions.add({"type":"add_after","name":"project","input":{"type":"select","name":"tasklist","label":"Task List","hint":"All Task List of the selected Project are listed here","placeholder":"Choose a Task List","mandatory":true,"value":"list","options":option}});
+	}
+	else
+	{
+		actions.add({"type":"remove","name":"tasklist"});
+	}
+}
+return {"type":"form_modification","actions":actions};

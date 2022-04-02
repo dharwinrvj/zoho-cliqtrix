@@ -1,0 +1,60 @@
+targetName = target.get("name");
+inputValues = form.get("values");
+option = List();
+actions = list();
+if(targetName.equalsIgnoreCase("portals"))
+{
+	portalID = inputValues.get("portals").get("value");
+	res = invokeurl
+	[
+		url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/"
+		type :GET
+		connection:"cliqzohoprojects"
+	];
+	if(!res.get("projects").isEmpty())
+	{
+		projects = res.get("projects");
+		for each  project in projects
+		{
+			entry = Map();
+			entry.put("label",project.get("name"));
+			entry.put("value",project.get("id"));
+			option.add(entry);
+		}
+		actions.add({"type":"add_after","name":"portals","input":{"type":"select","name":"project","label":"Project","hint":"All Projects from the slected Portal are listed here","placeholder":"Pick a Project","mandatory":true,"value":"list","options":option,"trigger_on_change":true}});
+	}
+	else
+	{
+		return {"text":"Looks like you haven't created any Projects in this Portal. Do try again after creating one."};
+	}
+	actions.add({"type":"remove","name":"tasklist"});
+	actions.add({"type":"remove","name":"task"});
+}
+if(targetName.equalsIgnoreCase("project"))
+{
+	portalID = inputValues.get("portals").get("value");
+	projectID = inputValues.get("project").get("value");
+	res = invokeurl
+	[
+		url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/" + projectID + "/bugs/"
+		type :GET
+		connection:"cliqzohoprojects"
+	];
+	if(!res.get("bugs").isEmpty())
+	{
+		bugs = res.get("bugs");
+		for each  bug in bugs
+		{
+			entry = Map();
+			entry.put("label",bug.get("title"));
+			entry.put("value",bug.get("id"));
+			option.add(entry);
+		}
+		actions.add({"type":"add_after","name":"project","input":{"type":"select","name":"issue","label":"Issues","hint":"All Issues of the selected Project are listed here","placeholder":"Select an Issue","mandatory":true,"value":"list","options":option}});
+	}
+	else
+	{
+		return {"text":":sad: You haven't created any Issues in this Project. Do try again after creating one."};
+	}
+}
+return {"type":"form_modification","actions":actions};

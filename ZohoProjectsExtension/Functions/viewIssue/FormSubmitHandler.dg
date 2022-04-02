@@ -1,0 +1,37 @@
+response = Map();
+formValues = form.get("values");
+if(!formValues.containsKey("portals"))
+{
+	return {"text":"Your account does not have any Portals.Do try again after creating Portals"};
+}
+if(!formValues.containsKey("project"))
+{
+	return {"text":"Looks like you haven't created any Projects in this Portal. Do try again after creating one."};
+}
+if(!formValues.containsKey("issue"))
+{
+	return {"text":":sad: You haven't created any Issues in this Project. Do try again after creating one."};
+}
+portalID = formValues.get("portals").get("value");
+projectID = formValues.get("project").get("value");
+issueID = formValues.get("issue").get("value");
+res = invokeurl
+[
+	url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/" + projectID + "/bugs/" + issueID + "/"
+	type :GET
+	connection:"cliqzohoprojects"
+];
+bugDetails = res.get("bugs").get(0);
+due_date = "None";
+if(bugDetails.containsKey("due_date"))
+{
+	due_date = bugDetails.get("due_date");
+}
+severity = bugDetails.get("severity").get("type");
+issue_name = bugDetails.get("title");
+issue_key = bugDetails.get("key");
+created_on = bugDetails.get("created_time");
+status = bugDetails.get("status").get("type");
+assignee = bugDetails.get("assignee_name");
+response = {"text":"*" + issue_key + " " + issue_name + "*","card":{"title":"","theme":"modern-inline"},"slides":{{"type":"list","title":"","data":{"*Status :* " + status,"*Assignee name :* " + assignee,"*Created on :* " + created_on,"*Due Date :* " + due_date,"*Severity :* " + severity}}}};
+return response;

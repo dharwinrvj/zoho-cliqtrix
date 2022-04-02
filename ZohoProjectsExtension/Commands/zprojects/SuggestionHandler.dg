@@ -1,0 +1,26 @@
+list = List();
+entry1 = Map();
+entry1.put("title","Add Task");
+entry1.put("description","Add a Task in Zoho Projects");
+// entry.put("imageurl","https://media3.giphy.com/media/Cmr1OMJ2FN0B2/giphy.gif");
+list.add(entry1);
+entry2 = Map();
+entry2.put("title","View Task");
+entry2.put("description","View Tasks from Zoho Projects");
+list.add(entry2);
+entry3 = Map();
+entry3.put("title","Add Issue");
+entry3.put("description","Add a Issue in Zoho Projects");
+list.add(entry3);
+entry4 = Map();
+entry4.put("title","View Issue");
+entry4.put("description","View Issues from Zoho Projects");
+list.add(entry4);
+if(selections.size() == 0)
+{
+	return list;
+}
+else
+{
+	return List();
+}

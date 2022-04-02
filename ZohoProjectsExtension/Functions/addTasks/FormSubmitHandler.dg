@@ -1,0 +1,28 @@
+response = Map();
+formValues = form.get("values");
+if(!formValues.containsKey("portals"))
+{
+	return {"text":"Your account does not have any Portals.Do try again after creating Portals"};
+}
+if(!formValues.containsKey("project"))
+{
+	return {"text":"Looks like you haven't created any Projects in this Portal. Do try again after creating one."};
+}
+if(!formValues.containsKey("tasklist"))
+{
+	return {"text":":sad: You haven't created any Task List. Do try again after creating one."};
+}
+portalID = form.get("values").get("portals").get("value");
+projectID = form.get("values").get("project").get("value");
+tasklistID = form.get("values").get("tasklist").get("value");
+projectName = form.get("values").get("project").get("label");
+task_title = form.get("values").get("title");
+task_description = form.get("values").get("description");
+addTask = invokeurl
+[
+	url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/" + projectID + "/tasks/?tasklist_id=" + tasklistID + "&name=" + encodeUrl(task_title) + "&description=" + encodeUrl(task_description)
+	type :POST
+	connection:"cliqzohoprojects"
+];
+response = {"text":"Successfully added a Task in *" + projectName + "* "};
+return response;

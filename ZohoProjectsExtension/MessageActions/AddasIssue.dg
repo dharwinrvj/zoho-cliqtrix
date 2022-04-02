@@ -1,0 +1,31 @@
+// Code for message action to add an issue in Zoho Projects
+form = Map();
+description = message.get("text");
+option = List();
+inputs = List();
+res = invokeurl
+[
+	url :"https://projectsapi.zoho.com/restapi/portals/"
+	type :GET
+	connection:"cliqzohoprojects"
+];
+if(!res.get("portals").isEmpty())
+{
+	portals = res.get("portals");
+	for each  portal in portals
+	{
+		entry = Map();
+		entry.put("label",portal.get("name"));
+		entry.put("value",portal.get("id_string"));
+		option.add(entry);
+	}
+	inputs.add({"type":"select","name":"portals","label":"Portals","trigger_on_change":true,"hint":"All your active Portals are listed here","placeholder":"Choose a Portal","mandatory":true,"options":option});
+	inputs.add({"type":"text","name":"title","label":"Title","hint":"Enter the Issue name","placeholder":"Ex: Payment Gateway is not working properly ","mandatory":true,"value":""});
+	inputs.add({"type":"textarea","name":"description","label":"Description","hint":"Briefly Describe the Issue","max_length":1000,"placeholder":"IT-Support: Requests on Device maintenance and Software installation","mandatory":false,"value":description});
+	form = {"type":"form","title":"Add Issue","hint":"Select the Project into which you want to Add the Issue.","name":"add","version":1,"button_label":"Add","actions":{"submit":{"type":"invoke.function","name":"addIssue"}},"inputs":inputs};
+}
+else
+{
+	return {"text":"Your account does not have any Portals.\nDo try again after creating Portals."};
+}
+return form;

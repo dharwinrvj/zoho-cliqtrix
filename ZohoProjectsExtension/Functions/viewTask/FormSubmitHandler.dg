@@ -1,0 +1,44 @@
+response = Map();
+formValues = form.get("values");
+if(!formValues.containsKey("portals"))
+{
+	return {"text":"Your account does not have any Portals.Do try again after creating Portals"};
+}
+if(!formValues.containsKey("project"))
+{
+	return {"text":"Looks like you haven't created any Projects in this Portal. Do try again after creating one."};
+}
+if(!formValues.containsKey("task"))
+{
+	return {"text":":sad: You haven't created any Tasks in this list. Do try again after creating one."};
+}
+portalID = formValues.get("portals").get("value");
+projectID = formValues.get("project").get("value");
+taskID = formValues.get("task").get("value");
+res = invokeurl
+[
+	url :"https://projectsapi.zoho.com/restapi/portal/" + portalID + "/projects/" + projectID + "/tasks/" + taskID + "/"
+	type :GET
+	connection:"cliqzohoprojects"
+];
+taskDetails = res.get("tasks").get(0);
+task_name = taskDetails.get("name");
+task_key = taskDetails.get("key");
+status = taskDetails.get("status").get("name");
+created_on = taskDetails.get("created_time");
+duration = "None";
+if(taskDetails.get("duration") != "0")
+{
+	duration = taskDetails.get("duration");
+}
+priority = taskDetails.get("priority");
+owners = taskDetails.get("details").get("owners");
+owners_name = "";
+for each  owner in owners
+{
+	owners_name = owners_name + owner.get("name");
+	owners_name = owners_name + ", ";
+}
+owners_name = owners_name.getPrefix(", ");
+response = {"text":"*" + task_key + " " + task_name + "*","card":{"title":"","theme":"modern-inline"},"slides":{{"type":"list","title":"","data":{"*Status :* " + status,"*Owners name :* " + owners_name,"*Created on :* " + created_on,"*Duration :* " + duration,"*Priority :* " + priority}}}};
+return response;
