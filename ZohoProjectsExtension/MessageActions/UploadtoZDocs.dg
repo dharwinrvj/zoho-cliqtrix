@@ -1,0 +1,21 @@
+output = Map();
+docsparams = Map();
+att = attachments.get(0);
+docsparams.put("stringPart","true");
+docsparams.put("paramName","filename");
+docsparams.put("content","" + att);
+fileslist = List();
+fileslist.add(docsparams);
+att.setParamName("content");
+fileslist.add(att);
+response = invokeurl
+[
+	url :"https://apidocs.zoho.com/files/v1/upload"
+	type :POST
+	files:fileslist
+	connection:"cliqzohoprojects"
+];
+result = response.get("response").toList().get(2).toList();
+docid = result.toMap().get("result").toList().get(1).toMap().get("uploaddocid");
+output.put("text","Uploaded to your Zoho Docs! (y) [View in Docs](https://docs.zoho.com/file/" + docid + ")");
+return output;
